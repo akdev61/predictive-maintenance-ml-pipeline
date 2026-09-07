@@ -66,13 +66,6 @@ at your deployed API URL instead of `http://localhost:8000`.
 This is the recommended frontend for a live deployment: it deploys as a static site (Netlify,
 Vercel, GitHub Pages, Render static site) with no cold start, unlike the Streamlit dashboard below.
 
-## 5. Run the Streamlit dashboard (optional, local testing only)
-`streamlit_app.py` is kept as a quick local testing tool, not meant for deployment — running two
-services (this dashboard + the API) means two independent cold starts on free hosting tiers. Use
-`index.html` for the deployed demo instead.
-```bash
-streamlit run streamlit_app.py
-```
 
 ## Feature engineering (must match between notebook and `main.py`)
 - `temp_diff` = Process temperature − Air temperature
