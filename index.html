@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Predictive Maintenance Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="page-header">
+    <h1>Predictive Maintenance Console</h1>
+    <p>Enter live sensor telemetry from a machine tool. The model estimates the probability of failure from a Random Forest pipeline trained on the AI4I 2020 dataset.</p>
+  </header>
+
+  <main class="console">
+
+    <!-- INPUT PANEL -->
+    <section class="panel panel-input" aria-labelledby="input-heading">
+      <h2 id="input-heading">Sensor input</h2>
+
+      <form id="predict-form" novalidate>
+
+        <div class="field">
+          <label>Product quality variant</label>
+          <div class="toggle-group" id="type-toggle" role="radiogroup" aria-label="Product quality variant">
+            <button type="button" class="toggle-btn active" data-value="L">L<span>Low</span></button>
+            <button type="button" class="toggle-btn" data-value="M">M<span>Medium</span></button>
+            <button type="button" class="toggle-btn" data-value="H">H<span>High</span></button>
+          </div>
+          <input type="hidden" id="machine_type" value="L">
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="air_temperature_k">Air temperature</label>
+            <div class="unit-input">
+              <input type="number" step="0.1" id="air_temperature_k" value="298.1" required>
+              <span class="unit">K</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="process_temperature_k">Process temperature</label>
+            <div class="unit-input">
+              <input type="number" step="0.1" id="process_temperature_k" value="308.6" required>
+              <span class="unit">K</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="rotational_speed_rpm">Rotational speed</label>
+            <div class="unit-input">
+              <input type="number" step="1" id="rotational_speed_rpm" value="1551" required>
+              <span class="unit">rpm</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="torque_nm">Torque</label>
+            <div class="unit-input">
+              <input type="number" step="0.1" id="torque_nm" value="42.8" required>
+              <span class="unit">Nm</span>
+            </div>
+          </div>
+
+          <div class="field field-wide">
+            <label for="tool_wear_min">Tool wear</label>
+            <div class="unit-input">
+              <input type="number" step="1" id="tool_wear_min" value="0" required>
+              <span class="unit">min</span>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="run-btn" id="submit-btn">Run diagnostic</button>
+      </form>
+    </section>
+
+    <!-- READOUT PANEL -->
+    <section class="panel panel-readout" aria-live="polite">
+      <h2>Readout</h2>
+
+      <div class="readout-body">
+
+        <!-- idle -->
+        <div class="state state-idle" id="state-idle">
+          <svg class="gauge gauge-dim" viewBox="0 0 240 150" aria-hidden="true">
+            <path class="gauge-track" d="M 20 130 A 100 100 0 0 1 220 130" />
+          </svg>
+          <p class="idle-copy">Awaiting input</p>
+        </div>
+
+        <!-- loading -->
+        <div class="state state-loading hidden" id="state-loading">
+          <svg class="gauge" viewBox="0 0 240 150" aria-hidden="true">
+            <path class="gauge-track" d="M 20 130 A 100 100 0 0 1 220 130" />
+            <path class="gauge-sweep" d="M 20 130 A 100 100 0 0 1 220 130" />
+          </svg>
+          <p class="idle-copy">Running inference&hellip;</p>
+        </div>
+
+        <!-- result -->
+        <div class="state state-result hidden" id="state-result">
+          <svg class="gauge" viewBox="0 0 240 150" aria-hidden="true">
+            <path class="gauge-track" d="M 20 130 A 100 100 0 0 1 220 130" />
+            <path class="gauge-fill" id="gauge-fill" d="M 20 130 A 100 100 0 0 1 220 130" />
+          </svg>
+          <div class="readout-number" id="readout-number">0%</div>
+          <div class="readout-status" id="readout-status">&nbsp;</div>
+          <dl class="readout-meta">
+            <div><dt>Predicted</dt><dd id="meta-predicted">&mdash;</dd></div>
+            <div><dt>Threshold</dt><dd>0.50</dd></div>
+          </dl>
+        </div>
+
+        <!-- error -->
+        <div class="state state-error hidden" id="state-error">
+          <p class="error-label">Connection lost</p>
+          <p class="error-copy" id="error-copy">Can't reach the model service.</p>
+          <button type="button" class="retry-btn" id="retry-btn">Try again</button>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="page-footer">
+    <p>Model: Random Forest pipeline &middot; Macro F1 0.93 &middot; ROC&#8209;AUC 0.98 &middot; trained on AI4I 2020</p>
+  </footer>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
